@@ -8,7 +8,7 @@
 
 #include <util/delay.h>
 #include <avr/io.h>
-#include <stdio.h>
+#include "UART.h"
 
 #define BAUD 9600
 #define MYUBRR F_CPU/8/BAUD-1
@@ -20,6 +20,12 @@ char pin_bot = 4;
 const unsigned char bot_mask = (1<<pin_bot);
 
 unsigned long tempo = 1000;
+
+UART uart; //chama o construtor automaticamente, antes mesmo de chegar na uart
+
+
+
+
 
 void setup() {
 	DDRB = (DDRB | led_mask) & ~bot_mask;
@@ -38,6 +44,7 @@ void apaga_led(){
 
 //loop botao-led
 void loop() {
+	uart.put('a');
 	if(le_botao()) {
 		acende_led();
 	}
@@ -54,6 +61,7 @@ void loop() {
 //}
 
 int main(){
+
 	setup();
 	while(true)
 		loop();
