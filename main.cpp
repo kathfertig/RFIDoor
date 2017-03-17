@@ -44,7 +44,7 @@ void apaga_led(){
 
 //loop botao-led
 void loop() {
-	uart.put('a');
+	uart.put(uart.get() + 1);
 	if(le_botao()) {
 		acende_led();
 	}

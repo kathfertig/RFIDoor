@@ -27,3 +27,15 @@ void UART::put(unsigned char data){
 	/* Put data into buffer, sends the data */
 	UDR0 = data;
 }
+
+unsigned char UART::get(){
+	/* Wait for data to be received */
+	while ( !(UCSR0A & (1<<RXC0)) );
+	/* Get and return received data from buffer */
+	return UDR0;
+}
+
+void UART::puts(char* str){
+
+
+}
