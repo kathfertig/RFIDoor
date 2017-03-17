@@ -21,7 +21,7 @@ const unsigned char bot_mask = (1<<pin_bot);
 
 unsigned long tempo = 1000;
 
-UART uart; //chama o construtor automaticamente, antes mesmo de chegar na uart
+UART uart(19200, UART::DATABITS_9, UART::PARITY_NONE, UART::STOPBITS_1); //chama o construtor automaticamente, antes mesmo de chegar na uart
 
 
 
