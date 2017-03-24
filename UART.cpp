@@ -56,6 +56,8 @@ unsigned char UART::get(){
 }
 
 void UART::puts(char* str){
-
-
+	while(*str != '\0'){
+		this->put(*str);
+		str++;
+	}
 }
