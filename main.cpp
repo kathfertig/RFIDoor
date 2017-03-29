@@ -33,7 +33,9 @@ GPIO botao(pin_bot, GPIO::INPUT);
 Timer timer(1000);
 
 
-void setup() {};
+void setup() {
+	sei(); //inicializar/ativar as interrupções
+};
 	bool val_botao;
 	char message[8];
 
@@ -46,9 +48,10 @@ void loop() {
 	//uart.puts(message);
 	//_delay_ms(100);
 
-
-	sprintf(message, "LED: %d\n", timer.millis());
+	timer.delay(1000);
+	sprintf(message, "%d\n", timer.millis());
 	uart.puts(message);
+
 }
 
 

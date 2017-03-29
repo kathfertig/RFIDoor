@@ -11,8 +11,6 @@
 	typedef unsigned long Hertz;
 	typedef unsigned long long Microseconds;
 	typedef unsigned long long Milliseconds;
-	typedef unsigned long long ulong64_t;
-	static ulong64_t _ticks;
 
 class Timer {
 public:
@@ -29,7 +27,11 @@ public:
 
 
 private:
-
+	Hertz _frequency;
+	static unsigned int _count_timer;
+	static unsigned long long _ticks;
+	static unsigned long long _us_ticks;
+	static unsigned long long _ms_ticks;
 
 };
 #endif /* TIMER_H_ */
