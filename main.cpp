@@ -20,7 +20,8 @@
 const int pin_led = 11;
 const int pin_bot = 12;
 
-unsigned long tempo = 1000;
+unsigned long long tempo = 1000; //ms
+unsigned long long fq = ((1/(tempo/1000))*1000);
 
 UART uart(//chama o construtor automaticamente, antes mesmo de chegar na uart
 		19200,
@@ -30,7 +31,7 @@ UART uart(//chama o construtor automaticamente, antes mesmo de chegar na uart
 
 GPIO led(pin_led, GPIO::OUTPUT);
 GPIO botao(pin_bot, GPIO::INPUT);
-Timer timer(1000);
+Timer timer(fq);
 
 
 void setup() {
@@ -46,9 +47,9 @@ void loop() {
 	led.set(val_botao);
 	//sprintf(message, "LED: %d\n", val_botao);
 	//uart.puts(message);
-	//_delay_ms(100);
+	//_delay_ms(tempo);
 
-	timer.delay(1000);
+	timer.delay(tempo);
 	sprintf(message, "%d\n", timer.millis());
 	uart.puts(message);
 

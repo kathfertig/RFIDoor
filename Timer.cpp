@@ -10,7 +10,7 @@
 #include <avr/interrupt.h>
 
 unsigned long long Timer::_ticks = 0;
-unsigned long long Timer::_us_ticks = 0;
+unsigned long long Timer::_us_ticks = 1000;
 unsigned long long Timer::_ms_ticks = 0;
 unsigned int Timer::_count_timer=0;
 
@@ -39,18 +39,17 @@ Timer::Timer(Hertz freq) : _frequency(freq)
 	}
 	//calcular ciclos de timer
 	_count_timer = f_timer/freq;
-	TCNT0 = 0xFF - _count_timer;
-	//TCNT0 = 0xF0; //0xF0 - 16;
+	TCNT0 = 0xFF - _count_timer; //funciona
+	//TCNT0 = 0xF0; //0xF0 - 16; //funciona - old
 }
 
 Timer::~Timer() {}
 
 Milliseconds Timer::millis(){
-
-	//versão básica(errada)
 	return micros()/1000;
 }
 Microseconds Timer::micros(){
+	//return _ticks; //funciona
 	return _us_ticks * _ticks;
 }
 
@@ -58,13 +57,15 @@ void Timer::delay(Milliseconds ms){
 	udelay(ms*1000);
 }
 void Timer::udelay(Microseconds us){
-	while (micros() != us)
-		micros();
+	Microseconds start = micros();
+	while (micros() - start <= us);
+
 }
 
 void Timer::isr_handler() //interrupt service request handler
 {
-	TCNT0 = 0xFF-_count_timer;
+	//TCNT0 = 0xF0; //funciona - old
+	TCNT0 = 0xFF -_count_timer; //funciona
 	_ticks++;
 }
 
