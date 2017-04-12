@@ -10,9 +10,9 @@
 #include <avr/interrupt.h>
 
 unsigned long long Timer::_ticks = 0;
-unsigned long long Timer::_us_ticks = 1000;
+unsigned long long Timer::_us_ticks = 0;
 unsigned long long Timer::_ms_ticks = 0;
-unsigned int Timer::_count_timer=0;
+unsigned long Timer::_count_timer;
 
 
 Timer::Timer(Hertz freq) : _frequency(freq)
@@ -21,7 +21,7 @@ Timer::Timer(Hertz freq) : _frequency(freq)
 	TCCR0A = 0x00; //operação normal de contagem
 	TIMSK0 = 0x01; //liga interrupção de overflow
 
-	double f_timer;
+	Hertz f_timer;
 	//lógica oara selecionar divisor
 	if(freq <= 15000){
 		TCCR0B = 0x05; //dividindo o clock por 1024
@@ -37,10 +37,15 @@ Timer::Timer(Hertz freq) : _frequency(freq)
 	}else{
 		TCCR0B = 0x01;
 	}
+
+
 	//calcular ciclos de timer
-	_count_timer = f_timer/freq;
+	//_count_timer = f_timer/freq;
+	_count_timer = (f_timer*freq)/1000000;
 	TCNT0 = 0xFF - _count_timer; //funciona
-	//TCNT0 = 0xF0; //0xF0 - 16; //funciona - old
+	//TCNT0 = 0xFF - 64; //funciona - old 0xF0;
+
+	_us_ticks = (1000000*_count_timer)/f_timer;
 }
 
 Timer::~Timer() {}
@@ -65,6 +70,7 @@ void Timer::udelay(Microseconds us){
 void Timer::isr_handler() //interrupt service request handler
 {
 	//TCNT0 = 0xF0; //funciona - old
+	//TCNT0 = 0xFF - 64; //funciona - old
 	TCNT0 = 0xFF -_count_timer; //funciona
 	_ticks++;
 }

@@ -7,6 +7,7 @@
 
 #include "UART.h"
 #include <avr/io.h>
+#include <string.h>
 
 UART::UART(unsigned long br, DataBits_t db, ParityBits_t pr, StopBits_t sb)
 :_baudrate(br), _databits(db), _parity(pr), _stopbits(sb){

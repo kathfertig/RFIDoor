@@ -28,7 +28,7 @@ public:
 
 private:
 	Hertz _frequency;
-	static unsigned int _count_timer;
+	static unsigned long _count_timer;
 	static unsigned long long _ticks;
 	static unsigned long long _us_ticks;
 	static unsigned long long _ms_ticks;

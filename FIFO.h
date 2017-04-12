@@ -7,47 +7,85 @@
 
 #ifndef FIFO_H_
 #define FIFO_H_
+//#include <iostream>
 
+//using namespace std;
 
 template <int Q_SIZE>
 #define Q_MAX (Q_SIZE-1)
 
 class FIFO {
 public:
-	FIFO() : _head(0), _tail(0){
 
-	}
+	enum FIFO_ERROR_t{FIFO_ERROR_FULL = 1,
+					  FIFO_ERROR_EMPTY = 2};
+
+	FIFO() : _head(0), _tail(0), _size(0){}
 	~FIFO(){}
 
 	void push(char value){
-		if (((_tail+1) % Q_SIZE) == _head){
-			//perror("enqueue onto full queue",_tail);
-			}
-		_buffer[_tail] = value;
+
+		_tail++;
+		//_tail = _tail % Q_SIZE;
+		if( _size == Q_SIZE) {
+			//_message = "FILA CHEIA!\n";
+			_error_fifo = FIFO_ERROR_FULL;
+
+		//if (((_tail+1) % Q_SIZE) == _head)	//perror("enqueue onto full queue",_tail);
+		} else {
+		_buffer[_tail-1] = value;
 		/* update the tail */
-		if (_tail == Q_MAX){
-			_tail = 0;
-		}else{
-			_tail++;}
+			if (_tail == Q_SIZE){
+				_tail = 0;
+			}
+			_size++;
+			_message = "PUSH OK!\n";
+		}
 
 	}
 	char pop(){
 		char returnval;
-		if (_head == _tail){ //error("dequeue from empty queue",head);
+		_head++;
+		if (_size == 0) {
+			//_message = "FILA VAZIA!\n";
+			_error_fifo = FIFO_ERROR_EMPTY;
+
+		} else {
+		//if (_head == _tail) //cout << "dequeue from empty queue"<< head << endl;//error("dequeue from empty queue",head);
+
+			returnval = _buffer[_head-1];
+			if (_head == Q_SIZE){
+				_head = 0;
+			}
+			_size--;
+			_message = "POP OK!\n";
 
 		}
-		returnval = _buffer[_head];
-		if (_head == Q_MAX)
-			_head = 0;
-		else
-			_head++;
 		return  returnval;
 	}
 
-private:
-	int _head, _tail;
-	char _buffer[Q_SIZE];
+	char* get_message(){
+		return _message;
+	}
 
+	int get_error(){
+			return _error_fifo;
+		}
+	int get_size(){
+			return _size;
+		}
+
+	void clear() {
+		_head = 0;
+		_tail = 0;
+		_size = 0;
+	}
+
+private:
+	int _head, _tail, _size;
+	char _buffer[Q_SIZE];
+	char * _message;
+	FIFO_ERROR_t _error_fifo;
 };
 
 #endif /* FIFO_H_ */
