@@ -50,13 +50,14 @@ void loop() {
 	val_botao = botao.get();
 	led.set(val_botao);
 	//sprintf(message, "LED: %d\n", val_botao);
-	//uart.puts(message);
-	//_delay_ms(tempo);
-
-	timer.delay(tempo); //o delay e o udelay funcionam!!
 	//uart.put('a');
-	sprintf(message, "%lu\n", timer.millis()); //timer.millis conta a cada 1 segundo apenas
-	uart.puts(message);
+	if(uart.has_data())
+		uart.put(uart.get() + 1);
+
+	// TESTE DO TIMER = OK
+	//timer.delay(tempo);
+	//sprintf(message, "%lu\n", timer.millis());
+	//uart.puts(message);
 
 }
 
@@ -68,7 +69,7 @@ int main(){
 }
 
 
-
+// TESTE DA FIFO - OK
 // * main.cpp
 // *
 // *  Created on: 15 de mar de 2017

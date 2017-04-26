@@ -32,15 +32,21 @@ public:
 	void put(unsigned char data);
 	unsigned char get();
 	void puts(char* str);
+	bool has_data() { return _rx_fifo.get_size() > 0; }
+	static void isr_handler();
+	static void rx_handler();
 
+	static UART * self() { return __singleton; }
 private:
 	unsigned long _baudrate;
 	DataBits_t _databits;
 	ParityBits_t _parity;
 	StopBits_t _stopbits;
 
-	//FIFO<8> _tx_fifo;
-	//FIFO<32> _rx_fifo;
+	FIFO<8> _tx_fifo;
+	FIFO<8> _rx_fifo;
+
+	static UART * __singleton;
 };
 
 #endif /* UART_H_ */

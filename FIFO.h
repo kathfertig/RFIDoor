@@ -8,6 +8,7 @@
 #ifndef FIFO_H_
 #define FIFO_H_
 //#include <iostream>
+#include <string.h>
 
 //using namespace std;
 
@@ -39,7 +40,7 @@ public:
 				_tail = 0;
 			}
 			_size++;
-			_message = "PUSH OK!\n";
+			strcpy(_message, "PUSH OK!\n");
 		}
 
 	}
@@ -58,7 +59,7 @@ public:
 				_head = 0;
 			}
 			_size--;
-			_message = "POP OK!\n";
+			strcpy(_message, "POP OK!\n");
 
 		}
 		return  returnval;
@@ -84,7 +85,7 @@ public:
 private:
 	int _head, _tail, _size;
 	char _buffer[Q_SIZE];
-	char * _message;
+	char _message[16];
 	FIFO_ERROR_t _error_fifo;
 };
 
