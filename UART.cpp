@@ -22,10 +22,8 @@ UART::UART(unsigned long br, DataBits_t db, ParityBits_t pr, StopBits_t sb)
 	// seta baudrate
 	UBRR0 = (F_CPU / (16ul * _baudrate)) - 1; //UBRR0 = 51;
 	//liga TX e RX
-	UCSR0B = (1<<RXEN0)|(1<<TXEN0) | (1<<RXCIE0);
+	UCSR0B = (1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0)|(1<<UDRIE0);
 
-	//liga interrupção do RX
-//	UCSR0B |= (1<<RXCIE0);
 
 	//set databits
 	if (_databits == DATABITS_9){
@@ -55,23 +53,14 @@ UART::~UART() {
 }
 
 void UART::put(unsigned char data){
-	//_tx_fifo.push(data);
-	//UCSR0B = (1<<UDRIE0);
-	//UDRIE0 = 0x01; //liga interrupção do registrador UDR
 
-	/* Wait for empty transmit buffer */
-	//while( !( UCSR0A & (1<<UDRE0)) );
-	while( !( UCSR0A & (1<<UDRE0)) );
-	/* Put data into buffer, sends the data */
-	UDR0 = data;
+	_tx_fifo.push(data);
+	UCSR0B |= (1<<UDRIE0);
+
 }
 
 unsigned char UART::get(){
 	return _rx_fifo.pop();
-	/* Wait for data to be received */
-	while ( !(UCSR0A & (1<<RXC0)) );
-	/* Get and return received data from buffer */
-	//return UDR0;
 }
 
 void UART::puts(char* str){
@@ -81,18 +70,26 @@ void UART::puts(char* str){
 	}
 }
 
-//void UART::isr_handler() //interrupt service request handler
-//{}
+void UART::tx_handler() //interrupt service request handler
+{
+	UART * uart = self();
+	if(uart->tx_has_data())
+		UDR0 = uart->_tx_fifo.pop();
+	else
+		UCSR0B &= ~(1<<UDRIE0);
+
+}
 
 void UART::rx_handler() //interrupt service request handler
 {
 	UART * uart = self();
 	uart->_rx_fifo.push(UDR0);
+
 }
 
-//ISR(USART_UDRE_vect) {
-//	UART::isr_handler();
-//}
+ISR(USART_UDRE_vect) {
+	UART::tx_handler();
+}
 
 ISR(USART_RX_vect) {
 	UART::rx_handler();

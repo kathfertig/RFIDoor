@@ -51,7 +51,7 @@ void loop() {
 	led.set(val_botao);
 	//sprintf(message, "LED: %d\n", val_botao);
 	//uart.put('a');
-	if(uart.has_data())
+	if(uart.rx_has_data())
 		uart.put(uart.get() + 1);
 
 	// TESTE DO TIMER = OK

@@ -32,8 +32,9 @@ public:
 	void put(unsigned char data);
 	unsigned char get();
 	void puts(char* str);
-	bool has_data() { return _rx_fifo.get_size() > 0; }
-	static void isr_handler();
+	bool rx_has_data() { return _rx_fifo.get_size() > 0; }
+	bool tx_has_data() { return _tx_fifo.get_size() > 0; }
+	static void tx_handler();
 	static void rx_handler();
 
 	static UART * self() { return __singleton; }
@@ -43,8 +44,8 @@ private:
 	ParityBits_t _parity;
 	StopBits_t _stopbits;
 
-	FIFO<8> _tx_fifo;
-	FIFO<8> _rx_fifo;
+	FIFO<4> _tx_fifo;
+	FIFO<4> _rx_fifo;
 
 	static UART * __singleton;
 };
