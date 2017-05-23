@@ -28,10 +28,10 @@ public:
 
 private:
 	Hertz _frequency;
-	static unsigned long _count_timer;
-	static unsigned long long _ticks;
-	static unsigned long long _us_ticks;
-	static unsigned long long _ms_ticks;
+	static Hertz _count_timer;
+	static Milliseconds _ticks;
+	static Microseconds _us_ticks;
+	static Milliseconds _ms_ticks;
 
 };
 #endif /* TIMER_H_ */

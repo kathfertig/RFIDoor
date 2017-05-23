@@ -9,10 +9,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-unsigned long long Timer::_ticks = 0;
-unsigned long long Timer::_us_ticks = 0;
-unsigned long long Timer::_ms_ticks = 0;
-unsigned long Timer::_count_timer;
+Milliseconds  Timer::_ticks = 0;
+Microseconds Timer::_us_ticks = 0;
+Milliseconds Timer::_ms_ticks = 0;
+Hertz Timer::_count_timer;
 
 
 Timer::Timer(Hertz freq) : _frequency(freq)
