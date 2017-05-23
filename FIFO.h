@@ -13,7 +13,7 @@
 //using namespace std;
 
 template <int Q_SIZE>
-#define Q_MAX (Q_SIZE-1)
+//#define Q_MAX (Q_SIZE-1)
 
 class FIFO {
 public:
