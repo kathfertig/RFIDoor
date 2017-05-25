@@ -44,8 +44,8 @@ private:
 	ParityBits_t _parity;
 	StopBits_t _stopbits;
 
-	FIFO<4> _tx_fifo;
-	FIFO<4> _rx_fifo;
+	FIFO<40> _tx_fifo;
+	FIFO<40> _rx_fifo;
 
 	static UART * __singleton;
 };

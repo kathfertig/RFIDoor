@@ -11,19 +11,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef uint64_t ID;
+typedef uint64_t n_id;
 
 class RFID {
 public:
 	RFID();
-	RFID(ID min, ID max);
+	RFID(n_id min, n_id max);
 	~RFID();
 
-	ID random_id();
+	n_id random_id();
 
 private:
-	ID _min;
-	ID _max;
+	n_id _min;
+	n_id _max;
 };
 
 #endif /* RFID_H_ */

@@ -12,14 +12,14 @@ RFID::RFID() {
 	_max = 2^40;
 }
 
-RFID::RFID(ID min, ID max) {
+RFID::RFID(n_id min, n_id max) {
 	_min = min;
 	_max = max;
 }
 
 RFID::~RFID() {}
 
-ID RFID::random_id(){
+n_id RFID::random_id(){
 
 	return ( rand() % ( _max - _min + 1 ) ) + _min;
 }
