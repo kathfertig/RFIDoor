@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdint.h>
 
 #define T_MAX 10

@@ -56,6 +56,14 @@ bool ID::remove(id_mat id_in){
      }
 }
 
+void ID::limpa_lista(){
+	for (int i=0; i< T_MAX; i++) {
+		memset(&_lista_IDs[i], 0, 40);
+	}
+}
+
+
+
 //https://www.vivaolinux.com.br/script/Busca-insercao-e-remocao-de-elementos-numa-lista
 
 

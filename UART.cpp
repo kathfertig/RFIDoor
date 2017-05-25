@@ -54,6 +54,7 @@ UART::~UART() {
 
 void UART::put(unsigned char data){
 
+	UCSR0B &= ~(1<<UDRIE0);
 	_tx_fifo.push(data);
 	UCSR0B |= (1<<UDRIE0);
 

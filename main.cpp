@@ -9,10 +9,6 @@
 #include <util/delay.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <inttypes.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
 #include "UART.h"
 #include "GPIO.h"
 #include "Timer.h"
@@ -23,11 +19,10 @@
 #define BAUD 9600
 #define MYUBRR F_CPU/8/BAUD-1
 
-//#define bzero(b,len) (memset((b), '\0', (len)), (void) 0)
-#define bzero(b,len) memset(b, '\0', len)
-
-const int pin_led = 11;
-const int pin_bot = 12;
+const int pin_led1 = 9;
+const int pin_led2 = 8;
+const int pin_bot1 = 12;
+const int pin_bot2 = 13;
 
 unsigned long long tempo = 2000; //ms
 unsigned long long fq = 1000000/tempo;
@@ -39,8 +34,10 @@ UART uart(//chama o construtor automaticamente, antes mesmo de chegar na uart
 		UART::PARITY_NONE,
 		UART::STOPBITS_1);
 
-GPIO led(pin_led, GPIO::OUTPUT);
-GPIO botao(pin_bot, GPIO::INPUT);
+GPIO led1(pin_led1, GPIO::OUTPUT);
+GPIO led2(pin_led2, GPIO::OUTPUT);
+GPIO botao1(pin_bot1, GPIO::INPUT);
+GPIO botao2(pin_bot2, GPIO::INPUT);
 Timer timer(fq);
 RFID ID_gen;
 ID _id_teste;
@@ -51,8 +48,8 @@ char data;
 int se;
 int n;
 bool rmove;
-id_mat teste = 1210000000;
-//int teste = 100;
+//id_mat teste = 1210000000;
+id_mat teste;
 
 
 void setup() {
@@ -61,11 +58,89 @@ void setup() {
 
 //loop botao-led
 void loop() {
-	val_botao = botao.get();
-	led.set(val_botao);
+	val_botao = botao1.get();
+	led1.set(val_botao);
 
-	memset(&message, '\0', 40);
+	val_botao = botao2.get();
+	led2.set(val_botao);
 
+
+		if (!_id_teste.lista_cheia()){
+			for(int indice =_id_teste.get_tam_atual(); indice < T_MAX; teste = teste+5,indice =_id_teste.get_tam_atual())
+			{
+				_id_teste.cadastra(teste);
+				se = _id_teste.verifica(teste);
+				if (se >= 0){
+					sprintf(message, "C%d: %lu -ACK\n", _id_teste.get_tam_atual(),_id_teste.busca(_id_teste.get_tam_atual()-1));
+				}else{
+					sprintf(message, "NACK\n");
+					//indice = T_MAX;
+				}
+				uart.puts(message);
+				timer.delay(500);
+			}
+		} else{
+			sprintf(message, "Lista cheia.\n");
+			uart.puts(message);
+			timer.delay(1000);
+
+			}
+	}
+}
+
+
+int main(){
+	setup();
+	while(true)
+		loop();
+}
+
+/* //TESTE 1 -CADASTRAR ID PELA PRIMEIRA VEZ:
+ * sprintf(message, "N de usuarios cadastrados: %d\n",_id_teste.get_tam_atual());
+	uart.puts(message);
+	timer.delay(1000);
+
+	sprintf(message, "Verifica teste: %d\n",_id_teste.verifica(teste));
+	uart.puts(message);
+	timer.delay(1000);
+
+	sprintf(message, "Cadastra teste: %d\n",_id_teste.cadastra(teste));
+	uart.puts(message);
+	timer.delay(1000);
+
+	sprintf(message, "N de usuarios cadastrados: %d\n",_id_teste.get_tam_atual());
+	uart.puts(message);
+	timer.delay(1000);
+
+	sprintf(message, "Verifica novamente teste: %d\n",_id_teste.verifica(teste));
+	uart.puts(message);
+	timer.delay(1000);
+ */
+
+/* //TESTE 2 - CADASTRAR DADOS EM TODA LISTA
+  if (!_id_teste.lista_cheia()){
+		for(int indice =_id_teste.get_tam_atual(); indice < T_MAX; teste = teste+5,indice =_id_teste.get_tam_atual())
+		{
+			_id_teste.cadastra(teste);
+			se = _id_teste.verifica(teste);
+			if (se >= 0){
+				sprintf(message, "C%d: %lu -ACK\n", _id_teste.get_tam_atual(),_id_teste.busca(_id_teste.get_tam_atual()-1));
+			}else{
+				sprintf(message, "NACK\n");
+				//indice = T_MAX;
+			}
+			uart.puts(message);
+			timer.delay(500);
+		}
+	} else{
+		sprintf(message, "Lista cheia.\n");
+		uart.puts(message);
+		timer.delay(1000);
+	}
+ */
+
+/* //TESTE 3 - REMOVER 1 DETERMINADO CADASTRO
+  memset(&message, '\0', 40);
 	sprintf(message, "N de usuarios cadastrados: %d\n",_id_teste.get_tam_atual());
 	uart.puts(message);
 	timer.delay(2000);
@@ -112,77 +187,43 @@ void loop() {
 		uart.puts(message);
 		timer.delay(2000);
 	}
-
-		/*n = 0;
-		sprintf(message, "Remover cadastro %lu\n", _id_teste.busca(n));
-		uart.puts(message);
-		timer.delay(1000);
-
-
-		if(teste == _id_teste.busca(n)){
-			sprintf(message, "Cadastro confere.\n");
-			uart.puts(message);
-		}
-
-		rmove = _id_teste.remove(teste);
-		se = _id_teste.verifica(_id_teste.busca(n));
-		if (rmove && (se<0)){
-			sprintf(message, "Removido: %lu \n", _id_teste.busca(n));
-		}else
-			sprintf(message, "Esse cadastro nao pode ser removido.\n");
-		uart.puts(message);
-		timer.delay(1000);*/
-
-
-}
-
-
-int main(){
-	setup();
-	while(true)
-		loop();
-}
-
-/*//TESTE PARA CADASTRAR ID PELA PRIMEIRA VEZ:
- * sprintf(message, "N de usuarios cadastrados: %d\n",_id_teste.get_tam_atual());
-	uart.puts(message);
-	timer.delay(1000);
-
-	sprintf(message, "Verifica teste: %d\n",_id_teste.verifica(teste));
-	uart.puts(message);
-	timer.delay(1000);
-
-	sprintf(message, "Cadastra teste: %d\n",_id_teste.cadastra(teste));
-	uart.puts(message);
-	timer.delay(1000);
-
-	sprintf(message, "N de usuarios cadastrados: %d\n",_id_teste.get_tam_atual());
-	uart.puts(message);
-	timer.delay(1000);
-
-	sprintf(message, "Verifica novamente teste: %d\n",_id_teste.verifica(teste));
-	uart.puts(message);
-	timer.delay(1000);
  */
 
-/*//TESTE PARA CADASTRAR DADOS EM TODA LISTA
-  if (!_id_teste.lista_cheia()){
-		for(int indice = 0; indice < T_MAX; teste = teste+5,indice =_id_teste.get_tam_atual())
-		{
-			_id_teste.cadastra(teste);
-			se = _id_teste.verifica(teste);
-			if (se >= 0){
-				sprintf(message, "C%d: %d -ACK\n", _id_teste.get_tam_atual(),_id_teste.busca(indice));
-			}else{
-				sprintf(message, "NACK\n");
-				//indice = T_MAX;
-			}
-			uart.puts(message);
-			timer.delay(500);
-		}
-	} else{
-		sprintf(message, "Lista cheia.\n");
+/* //TESTE 4 - REMOVE CADASTRO DA POSICAO n
+		int n = 0;
+		id_mat n_mat = _id_teste.busca(n);
+		sprintf(message, "Remover cadastro %lu\n", n_mat);
 		uart.puts(message);
 		timer.delay(1000);
-	}
+		rmove = _id_teste.remove(n_mat);
+		se = _id_teste.verifica(n_mat);
+		if (rmove){
+			if (se < 0)
+			sprintf(message, "Removido: %lu \n", n_mat);
+		}else
+			sprintf(message, "Esse cadastro nao pode ser removido.\n");
+
+		uart.puts(message);
+		timer.delay(1000);
+
+		sprintf(message, "N de usuarios: %d \n", _id_teste.get_tam_atual());
+		uart.puts(message);
+		timer.delay(1000);
+
+		 */
+
+/* // TESTE 5 - OBTER TODOS OS IDs DA LISTA
+
+		for(int i=0; i<_id_teste.get_tam_atual(); i++) {
+			sprintf(message, "C%d: %lu \n", i+1,_id_teste.busca(i));
+			uart.puts(message);
+			timer.delay(1000);
+		}
+		*/
+
+/* //TESTE 6 - LIMPAR TODA LISTA
+		_id_teste.limpa_lista();
+		sprintf(message, "No de users cadastrados: %d.\n", _id_teste.get_tam_atual());
+		uart.puts(message);
+		timer.delay(1000);
  */
