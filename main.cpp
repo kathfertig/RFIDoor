@@ -6,7 +6,7 @@
  *      */
 
 
-#include <util/delay.h>
+//#include <util/delay.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "UART.h"
@@ -15,6 +15,7 @@
 #include "FIFO.h"
 #include "RFID.h"
 #include "ID.h"
+#include "LOG.h"
 
 #define BAUD 9600
 #define MYUBRR F_CPU/8/BAUD-1
@@ -41,6 +42,8 @@ GPIO botao2(pin_bot2, GPIO::INPUT);
 Timer timer(fq);
 RFID ID_gen;
 ID _id_teste;
+ID ID_acesso;
+LOG logger;
 
 bool val_botao;
 char data;
@@ -48,6 +51,12 @@ int se;
 int n;
 bool rmove;
 char message[40];
+//id_mat teste = 1210004800;
+//id_mat teste;
+//char matricula_in[40];
+id_mat id_gen;
+id_mat matricula_in;
+id_mat buscas;
 
 void get_id64(id_mat & id, bool endline = false){
 	    char buffer[32];
@@ -71,7 +80,38 @@ void setup() {
 	sei(); //inicializar/ativar as interrupções
 };
 
-//loop botao-led
+/*//FUNCIONAMENTO DO SISTEMA:
+ * Insere matricula/cartao
+
+ * botao 1:
+	- id cadastrado: libera acesso
+		1. led verde
+		2. 1 bip alto
+		3. abre porta
+	- id nao cadastrado: tentar denovo para se cadastrar (botao 2)
+		1. led vermelho
+		2. 1 bip baixo
+
+ * botao 2:
+	- id cadastrado: nao fazer nada
+	- id nao cadastrado: cadastrar ID inserido
+		1. cadastrado:
+			1.1 led verde
+			1.2 3 bips altos
+		2. nao cadastrado:
+			2.1 led vermelho
+			2.2 3 bips baixos
+ * botao 3:
+	- id cadastrado: remover seu cadastro
+		1. removido:
+			1.1 led verde
+			 1.2 3 bips altos
+		2. nao removido:
+			2.1 led vermelho
+			2.2 3 bips baixos
+	- id nao cadastrado: nao fazer nada
+ */
+
 void loop() {
 	val_botao = botao1.get();
 	led1.set(val_botao);
@@ -79,9 +119,93 @@ void loop() {
 	val_botao = botao2.get();
 	led2.set(val_botao);
 
+	//val_botao = botao3.get();
+
+	//Simulando obtenção de ID por leitor
+	id_gen = ID_gen.random_id();
+	get_id64(id_gen);
+	uart.put(uart.get());
+	timer.delay(10000);
+	//Começa a executar apenas se houver tentativa de acesso ao sistema
 
 
+	//if(uart.tx_has_data()){
+	//	matricula = (id_mat)uart.get();
+	//}else matricula = 0;
 
+	/*if(matricula != 0){
+	//1)ver se botão 1 foi clicado (quer entrar)
+		//switch (botao)
+		//case 1:
+
+		//Analisa acesso:
+		sprintf(message, "Novo ID tentando acesso:");
+		uart.puts(message);
+		get_id64(matricula);
+		sprintf(message, ".\n");
+		uart.puts(message);
+
+		if(ID_acesso.verifica(matricula) >= 0)
+		{
+			sprintf(message, "ID cadastrado. Liberando acesso");
+			uart.puts(message);
+			//acender led verde, habilitar relé, 3 bips curtos do alta freq. buzzer
+
+		}else
+		{
+			sprintf(message, "ID sem cadastro.");
+			uart.puts(message);
+			//acender led vermelho, bip longo de baixa freq. do buzzer
+			sprintf(message, "Para editar cadastros insira o cartao e aperte o botao 2.");
+			uart.puts(message);
+		}
+
+	//2)ver se botão 2 foi clicado (quer editar cadastros)
+		//case 2:
+
+		if(ID_acesso.verifica(matricula) >= 0)
+		{
+			sprintf(message, "ID cadastrado. Para remover seu ID aperte o botão 2.\n");
+			uart.puts(message);
+			//if(botao = 2){
+			sprintf(message, "Preparando para remover ID.");
+			uart.puts(message);
+			buscas = ID_acesso.busca(n);
+			if(ID_acesso.remove(buscas)){
+				sprintf(message, "ID removido com sucesso!\n");
+				//acender led verde, 2 bip curtos alta freq. do buzzer
+			}else {
+				sprintf(message, "ID nao pode ser removido! Tente novamente ou entre em contato com um responsavel.\n");
+				//acender led vermelho, 2 bip curtos baixa freq. do buzzer
+			}uart.puts(message);
+			//}else(botao = 1){
+				//sprintf(message, "Operacao invalida!\n");
+				//uart.puts(message);}
+			    //acender led vermelho, bip longo de baixa freq. do buzzer
+		}
+		else
+		{
+			sprintf(message, "ID sem cadastro. Para cadastrar aperte o botão 1.\n");
+			uart.puts(message);
+			//if(botao = 1){
+			sprintf(message, "Preparando para cadastrar ID.");
+			uart.puts(message);
+			bool ret = ID_acesso.cadastra(matricula);
+			if(ret){
+				sprintf(message, "ID cadastrado com sucesso!\n");
+				//acender led verde, 2 bip curtos alta freq. do buzzer
+			}else{
+				sprintf(message, "ID nao pode ser cadastrado! Tente novamente ou entre em contato com um responsavel.\n");
+				//acender led vermelho, 2 bip curtos baixa freq. do buzzer
+			}uart.puts(message);
+			//}else(botao = 2){
+				//sprintf(message, "Operacao invalida!\n");
+				//uart.puts(message);}
+			   //acender led vermelho, bip longo de baixa freq. do buzzer
+
+		}
+
+	}*/
 
 
 }
@@ -265,3 +389,44 @@ id_mat teste = 1210000000;
 	uart.puts(message);
 	timer.delay(1000);
 	*/
+
+/* //TESTE 8 - INSERE ALGO NO LOG - não funcionando
+	//bool reg_ok;
+	/*int tam;
+	tam = logger.get_tam_atual();
+
+	sprintf(message, "Tamanho atual: %d \n", tam);
+	uart.puts(message);
+	timer.delay(2000);*/
+
+	/*sprintf(message, "Log de teste \n");
+	logger.insere_log(message);
+
+	tam = logger.get_tam_atual();
+
+	sprintf(message, "Tamanho atual: %d \n", tam);
+	uart.puts(message);
+	timer.delay(2000);
+
+	//char * texto_log = logger.lista[tam];
+
+	sprintf(message, "Inserido: %s \n", logger.get_log(tam));
+	uart.puts(message);
+	timer.delay(2000);
+
+ */
+
+/* //TESTE 9 - GERAÇÃO DE ID RANDOMICO
+	sprintf(message, "ID randomico: ");
+	uart.puts(message);
+	teste = ID_gen.random_id();
+	get_id64(teste);
+	sprintf(message, ".\n");
+	uart.puts(message);
+	timer.delay(1000);
+ */
+
+
+
+
+

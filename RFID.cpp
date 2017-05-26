@@ -8,21 +8,18 @@
 #include "RFID.h"
 
 RFID::RFID() {
-	_min = 0;
+	_min = 2^39;
 	_max = 2^40;
 }
 
-RFID::RFID(n_id min, n_id max) {
+RFID::RFID(id_mat min, id_mat max) {
 	_min = min;
 	_max = max;
 }
 
 RFID::~RFID() {}
 
-n_id RFID::random_id(){
 
-	return ( rand() % ( _max - _min + 1 ) ) + _min;
-}
 
 
 
