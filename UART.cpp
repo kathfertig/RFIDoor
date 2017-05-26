@@ -46,6 +46,7 @@ UART::UART(unsigned long br, DataBits_t db, ParityBits_t pr, StopBits_t sb)
 
 	/* Set frame format: 8data, 2stop bit *///OLD
 	//UCSR0C = (3<<UCSZ00);//= a setar: (1<<UCSZ01)|(1<<UCSZ00);
+
 }
 
 UART::~UART() {

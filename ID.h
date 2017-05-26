@@ -21,7 +21,7 @@ fazer teste temporário de gerar ID de entrada do sistema enquanto não há a le
 liberar acesso se o valor já for cadastrado no sistema.*/
 
 //typedef uint64_t id_mat; //Definindo novo dado do tipo id de matrícula
-typedef long int id_mat;
+typedef unsigned long long id_mat;
 //uint64_t é equivalente a long long int. (%lld)
 
 
@@ -43,6 +43,9 @@ public:
 		return (get_tam_atual() == T_MAX);
 	}
 	void limpa_lista();
+
+	char* get_id64(id_mat & id, bool endline = false);
+
 
 	//ID random_id();
 
