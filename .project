@@ -3,6 +3,7 @@
 	<name>RFIDoor</name>
 	<comment></comment>
 	<projects>
+		<project>RFIDoor</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
