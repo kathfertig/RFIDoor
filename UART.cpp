@@ -89,10 +89,20 @@ void UART::rx_handler() //interrupt service request handler
 
 }
 
-ISR(USART_UDRE_vect) {
-	UART::tx_handler();
+#ifdef __AVR_ATmega2560__
+ISR(USART0_RX_vect)
+#else
+ISR(USART_RX_vect)
+#endif
+{
+	UART::rx_handler();
 }
 
-ISR(USART_RX_vect) {
-	UART::rx_handler();
+#ifdef __AVR_ATmega2560__
+ISR(USART0_UDRE_vect)
+#else
+ISR(USART_UDRE_vect)
+#endif
+{
+	UART::tx_handler();
 }
