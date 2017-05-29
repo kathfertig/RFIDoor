@@ -9,13 +9,13 @@
 //#include <util/delay.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "UART.h"
 #include "GPIO.h"
 #include "Timer.h"
 #include "FIFO.h"
 #include "RFID.h"
 #include "ID.h"
-#include "LOG.h"
+#include "UART.h"
+//#include "LOG.h"
 
 #define BAUD 9600
 #define MYUBRR F_CPU/8/BAUD-1
@@ -27,10 +27,7 @@ const int pin_bot2 = 13;
 
 Hertz tempo = 2000; //ms
 Hertz fq = 1000000/tempo;
-
-
-UART uart(//chama o construtor automaticamente, antes mesmo de chegar na uart
-		19200,
+UART uart(19200,
 		UART::DATABITS_8,
 		UART::PARITY_NONE,
 		UART::STOPBITS_1);
@@ -43,22 +40,20 @@ Timer timer(fq);
 RFID ID_gen;
 ID _id_teste;
 ID ID_acesso;
-LOG logger;
+//LOG logger;
 
 bool val_botao;
 char data;
-int se;
+int retorno;
 int n;
 bool rmove;
 char message[40];
-//id_mat teste = 1210004800;
-//id_mat teste;
-//char matricula_in[40];
 id_mat id_gen;
 id_mat matricula_in;
 id_mat buscas;
+int tipo_log;
 
-void get_id64(id_mat & id, bool endline = false){
+void get_id64(id_mat & id, bool endline){
 	    char buffer[32];
 	    union {
 	        unsigned long long ull;
@@ -75,6 +70,8 @@ void get_id64(id_mat & id, bool endline = false){
 	        sprintf(buffer, "%lu%lu", rfid64.ul[0], rfid64.ul[1]);
 	    uart.puts(buffer);
 }
+
+
 
 void setup() {
 	sei(); //inicializar/ativar as interrupções
@@ -122,17 +119,52 @@ void loop() {
 	//val_botao = botao3.get();
 
 	//Simulando obtenção de ID por leitor
-	id_gen = ID_gen.random_id();
-	get_id64(id_gen);
-	uart.put(uart.get());
-	timer.delay(10000);
+	//id_gen = ID_gen.random_id();
+	//get_id64(id_gen);
+	//uart.put(uart.get());
+	//timer.delay(10000);
 	//Começa a executar apenas se houver tentativa de acesso ao sistema
 
+	matricula_in = ID_gen.random_id();
+	get_id64(matricula_in,0);
+	timer.delay(500);
 
 	//if(uart.tx_has_data()){
 	//	matricula = (id_mat)uart.get();
 	//}else matricula = 0;
 
+	//sprintf(message, "Insira o seu cartao e: 1) Para abrir porta aperte o botao 1;\n2) Para cadastrar ID aperte o botao 2;\n3) Para remover ID aperte o botao 3;\n");
+	//uart.puts(message);
+
+
+	/*switch(val_botao){
+	case 1:
+		//Analisa acesso:
+		logger.print_acesso(matricula_in);
+		logger.print_verifica(matricula_in);
+		retorno = ID_acesso.verifica(matricula_in);
+		logger.print_libera(retorno);
+		//notifier.set(retorno)//acender led verde, habilitar relé, 3 bips curtos do alta freq. buzzer
+		//acender led vermelho, bip longo de baixa freq. do buzzer
+		break;
+	case 2:
+		//Cadastra ID:
+		logger.print_cadastra(matricula_in);
+		retorno = ID_acesso.cadastra(matricula_in);
+		logger.print_resultado(retorno);
+		//notifier.set(retorno)//acender led verde, 2 bip curtos alta freq. do buzzer
+		//acender led vermelho, 2 bip curtos baixa freq. do buzzer
+		break;
+	case 3:
+		//Remove ID:
+		logger.print_remove(matricula_in);
+		retorno = ID_acesso.remove(matricula_in);
+		logger.print_resultado(retorno);
+		//notifier.set(retorno)//acender led verde, 2 bip curtos alta freq. do buzzer
+		//acender led vermelho, 2 bip curtos baixa freq. do buzzer
+		break;
+
+	}*/
 	/*if(matricula != 0){
 	//1)ver se botão 1 foi clicado (quer entrar)
 		//switch (botao)
@@ -207,224 +239,17 @@ void loop() {
 
 	}*/
 
-
-}
+};
 
 
 int main(){
 	setup();
-	while(true)
+	while(true){
 		loop();
+	}
 }
 
-/* //TESTE 1 -CADASTRAR ID PELA PRIMEIRA VEZ:
-   sprintf(message, "N de usuarios cadastrados: %d\n",_id_teste.get_tam_atual());
-	uart.puts(message);
-	timer.delay(1000);
 
-	sprintf(message, "Verifica teste: %d\n",_id_teste.verifica(teste));
-	uart.puts(message);
-	timer.delay(1000);
-
-	sprintf(message, "Cadastra teste: %d\n",_id_teste.cadastra(teste));
-	uart.puts(message);
-	timer.delay(1000);
-
-	sprintf(message, "N de usuarios cadastrados: %d\n",_id_teste.get_tam_atual());
-	uart.puts(message);
-	timer.delay(1000);
-
-	sprintf(message, "Verifica novamente teste: %d\n",_id_teste.verifica(teste));
-	uart.puts(message);
-	timer.delay(1000);
- */
-
-/* //TESTE 2 - CADASTRAR DADOS EM TODA LISTA
-id_mat teste = 1210000000;
-	id_mat retorno;
-	if (!_id_teste.lista_cheia()){
-			for(int indice =_id_teste.get_tam_atual(); indice < T_MAX; teste = teste+5,indice =_id_teste.get_tam_atual())
-			{
-				_id_teste.cadastra(teste);
-				se = _id_teste.verifica(teste);
-				if (se >= 0){
-					sprintf(message, "C%d: ", _id_teste.get_tam_atual());
-					uart.puts(message);
-					retorno = _id_teste.busca(_id_teste.get_tam_atual()-1);
-					get_id64(retorno,0);
-					sprintf(message, " -ACK\n");
-					uart.puts(message);
-				}else{
-					sprintf(message, "NACK\n");
-					uart.puts(message);
-				}
-				timer.delay(1000);
-			}
-		} else{
-			sprintf(message, "Lista cheia.\n");
-			uart.puts(message);
-			timer.delay(1000);
-		}
- */
-
-/* //TESTE 3 - REMOVER 1 DETERMINADO CADASTRO
-  id_mat teste = 1210000000;
-		id_mat retorno;
-		memset(&message, '\0', 40);
-		sprintf(message, "N de usuarios cadastrados: %d\n",_id_teste.get_tam_atual());
-		uart.puts(message);
-		timer.delay(1000);
-
-
-		sprintf(message, "Verifica teste: %d\n",_id_teste.verifica(teste));
-		uart.puts(message);
-		timer.delay(1000);
-
-
-		sprintf(message, "Cadastra teste: %d\n",_id_teste.cadastra(teste));
-		uart.puts(message);
-		timer.delay(1000);
-
-
-		sprintf(message, "N de usuarios cadastrados: %d\n",_id_teste.get_tam_atual());
-		uart.puts(message);
-		timer.delay(1000);
-
-
-		n = _id_teste.verifica(teste);
-		sprintf(message, "Verifica novamente teste: %d\n",n);
-		uart.puts(message);
-		timer.delay(1000);
-
-		sprintf(message, "Remover ");
-		uart.puts(message);
-		retorno = _id_teste.busca(n);
-		get_id64(retorno);
-		sprintf(message, ". Retorno remocao: %d\n", _id_teste.remove(retorno));
-		uart.puts(message);
-		timer.delay(1000);
-
-
-		if(_id_teste.verifica(teste) < 0){ // se não encontrou
-
-			sprintf(message, "Cadastro removido.\n");
-			uart.puts(message);
-			timer.delay(1000);
-
-			sprintf(message, "N de usuarios cadastrados: %d\n",_id_teste.get_tam_atual());
-			uart.puts(message);
-			timer.delay(5000);
-		}else{
-
-			sprintf(message, "Cadastro nao removido.\n");
-			uart.puts(message);
-			timer.delay(5000);
-		}
- */
-
-/* //TESTE 4 - REMOVE CADASTRO DA POSICAO n *Restrição: lista já deve ter IDs cadastrados
-		int n = 0;
-			id_mat n_mat = _id_teste.busca(n);
-
-			sprintf(message, "Remover cadastro ");
-			uart.puts(message);
-			get_id64(n_mat);
-			sprintf(message, ".\n");
-			uart.puts(message);
-			timer.delay(1000);
-
-			rmove = _id_teste.remove(n_mat);
-			se = _id_teste.verifica(n_mat);
-			if (rmove){
-				if (se < 0){
-					sprintf(message, "Removido: ");
-					uart.puts(message);
-					get_id64(n_mat);
-					sprintf(message, ".\n");
-					uart.puts(message);
-				}
-			}else
-				sprintf(message, "Esse cadastro nao pode ser removido.\n");
-			timer.delay(1000);
-
-			sprintf(message, "N de usuarios: %d \n", _id_teste.get_tam_atual());
-			uart.puts(message);
-			timer.delay(1000);
-		 */
-
-/* // TESTE 5 - OBTER TODOS OS IDs DA LISTA *Restrição: lista já deve ter IDs cadastrados
-
-	id_mat retorno;
-	memset(&message, '\0', 40);
-	for(int i=0; i<_id_teste.get_tam_atual(); i++) {
-		sprintf(message, "C%d: ", i+1);
-		uart.puts(message);
-		retorno = _id_teste.busca(i);
-		get_id64(retorno,0);
-		sprintf(message, ".\n");
-		uart.puts(message);
-		timer.delay(1000);
-	}
-		*/
-
-/* //TESTE 6 - LIMPAR TODA LISTA
-
-	sprintf(message, "No de users cadastrados: %d.\n", _id_teste.get_tam_atual());
-	uart.puts(message);
-	timer.delay(1000);
-	if (_id_teste.get_tam_atual()>0){
-		_id_teste.limpa_lista();
-		sprintf(message, "Limpando lista. \n");
-	}else
-		sprintf(message, "Lista ja esta vazia.\n");
-	uart.puts(message);
-	timer.delay(1000);
- */
-
-/*//TESTE 7 - LOG MOSTRAR ID ESPECIFICO DA LISTA *Restrição: lista já deve ter IDs cadastrados
-	sprintf(message, "Matricula: ");
-	uart.puts(message);
-	get_id64(teste);
-	sprintf(message, ".\n");
-	uart.puts(message);
-	timer.delay(1000);
-	*/
-
-/* //TESTE 8 - INSERE ALGO NO LOG - não funcionando
-	//bool reg_ok;
-	/*int tam;
-	tam = logger.get_tam_atual();
-
-	sprintf(message, "Tamanho atual: %d \n", tam);
-	uart.puts(message);
-	timer.delay(2000);*/
-
-	/*sprintf(message, "Log de teste \n");
-	logger.insere_log(message);
-
-	tam = logger.get_tam_atual();
-
-	sprintf(message, "Tamanho atual: %d \n", tam);
-	uart.puts(message);
-	timer.delay(2000);
-
-	//char * texto_log = logger.lista[tam];
-
-	sprintf(message, "Inserido: %s \n", logger.get_log(tam));
-	uart.puts(message);
-	timer.delay(2000);
-
- */
-
-/* //TESTE 9 - GERAÇÃO DE ID RANDOMICO
-	sprintf(message, "ID randomico: ");
-	uart.puts(message);
-	teste = ID_gen.random_id();
-	get_id64(teste);
-	sprintf(message, ".\n");
-	uart.puts(message);
-	timer.delay(1000);
- */
 
 
 
