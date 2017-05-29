@@ -12,7 +12,7 @@
 #include "Timer.h"
 
 Timer timer_aciona(1000);
-typedef long int Hertz;
+typedef long int hertz;
 
 class Buzzer {
 public:
@@ -27,8 +27,8 @@ public:
 
 private:
 	GPIO _buzzer_config;
-	Hertz _frequencia;
-	Hertz _tempo;
+	hertz _frequencia;
+	hertz _tempo;
 };
 
 #endif /* BUZZER_H_ */

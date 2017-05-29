@@ -46,9 +46,9 @@ Buzzer::Buzzer(int pin, Buzzer_t bz) : _buzzer_config(pin, GPIO::OUTPUT) {
 Buzzer::~Buzzer(){}
 
 void Buzzer::aciona_config(){
-	Hertz val = (500000/(_frequencia));
+	hertz val = (500000/(_frequencia));
 	//long int t = _miliseconds*1000 / (1000/_frequencia);
-	Hertz t = (_tempo*50) / (val*2);
+	hertz t = (_tempo*50) / (val*2);
 
 	for(long int i=0; i < t; i++){
 		_buzzer_config.set(true);
