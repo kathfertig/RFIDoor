@@ -18,13 +18,10 @@ private:
 
 public:
 
-    RDM6300(SerialT * serial) :
-            _serial(serial), _current_id(0), _received_checksum(0), _id_is_valid(
-                    false) {
-    }
+    RDM6300(SerialT * serial) : _serial(serial), _current_id(0),
+	_received_checksum(0), _id_is_valid(false) {}
 
-    ~RDM6300() {
-    }
+    ~RDM6300() {}
 
     unsigned long long read() {
         while (!_id_is_valid) {
@@ -36,13 +33,17 @@ public:
         return _current_id;
     }
 
-private:
     int get_val(char c) {
         static const char ascii_diff = 48;
         c -= ascii_diff;
         if (c > 9)
             c -= 7;
         return c;
+    }
+
+    bool id_is_valid() { return _id_is_valid; }
+    unsigned long long get_current_id() {
+    	return _current_id;
     }
 
     int get_checksum(unsigned long long data) {
@@ -98,6 +99,7 @@ private:
         return _id_is_valid;
     }
 
+private:
     SerialT * _serial;
     unsigned long long _current_id;
     unsigned char _received_checksum;
