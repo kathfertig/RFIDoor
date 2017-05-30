@@ -7,6 +7,7 @@
 
 #ifndef LOG_H_
 #define LOG_H_
+
 #include <avr/io.h>
 #include <stdlib.h>
 #include <inttypes.h>
@@ -17,22 +18,13 @@
 #include <avr/interrupt.h>
 #include "UART.h"
 #include "ID.h"
+#include "Timer.h"
 
-UART _uart_log(19200,
-		UART::DATABITS_8,
-		UART::PARITY_NONE,
-		UART::STOPBITS_1);
+
 class LOG {
 public:
 
-	/*enum LOG_TYPES_t{
-			ACESS_ACK = 0,
-			DATABITS_6 = 1,
-			DATABITS_7 = 2,
-			DATABITS_8 = 3,
-			DATABITS_9 = 7};*/
-
-	LOG();
+	LOG(UART *uart, Timer *pausa);
 	~LOG();
 
 
@@ -48,17 +40,14 @@ public:
 	void print_limpa_lista(int tam_lista, ID lista_ids);
 	void print_resultado(int retorno_operacao); //método para mostrar sucesso ou não da operação
 
-	void endline(){ //método para impressão apenas de final de linha e início de nova linha de log
-		sprintf(_message, "\n.");
-		_uart_log.puts(_message);
-	};
 	//void delay_padrao(){pausa.delay(500);
 			//método de delay padrão para os logs
 	//};
 
 private:
 	char _message[40];
-
+	UART * _uart_log;
+	Timer * _pausa;
 
 };
 
