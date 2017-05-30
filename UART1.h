@@ -55,7 +55,7 @@ private:
 	ParityBits_t _parity;
 	StopBits_t _stopbits;
 
-	typedef FIFO<16,char> UART_FIFO;
+	typedef FIFO<16> UART_FIFO;
 	UART_FIFO _rx_fifo;
 	UART_FIFO _tx_fifo;
 };
