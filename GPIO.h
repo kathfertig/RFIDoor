@@ -20,6 +20,8 @@ public:
 
 	bool get();
 	void set(bool val);
+	static void isr_handler();
+
 private:
 	volatile uint8_t * _ddr;
 	volatile uint8_t * _pin;

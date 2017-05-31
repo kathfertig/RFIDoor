@@ -6,6 +6,8 @@
  */
 
 #include "GPIO.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
 GPIO::GPIO(int pin, PortDirection_t dir) {
 	//calcular a máscara
@@ -37,9 +39,24 @@ bool GPIO::get() {
 }
 
 void GPIO::set(bool val){
+
 	//escrever no port
 	if (val == true) //PORTB = PORTB | led_mask;
 	*_port  = *_port | _mask;
 	else
 	*_port  = *_port & ~_mask;
 }
+
+void GPIO::isr_handler() //interrupt service request handler
+{
+	//UART * uart = self();
+	//uart->_rx_fifo.push(UDR0);
+
+}
+
+
+/*ISR(){
+	GPIO::isr_handler();
+}*/
+
+
