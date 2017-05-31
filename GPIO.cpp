@@ -46,17 +46,3 @@ void GPIO::set(bool val){
 	else
 	*_port  = *_port & ~_mask;
 }
-
-void GPIO::isr_handler() //interrupt service request handler
-{
-	//UART * uart = self();
-	//uart->_rx_fifo.push(UDR0);
-
-}
-
-
-/*ISR(){
-	GPIO::isr_handler();
-}*/
-
-
