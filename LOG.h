@@ -24,7 +24,7 @@
 class LOG {
 public:
 
-	LOG(UART *uart, Timer *pausa);
+	LOG(UART *uart, Timer *timer);
 	~LOG();
 
 
@@ -38,16 +38,26 @@ public:
 	void print_IDs(ID lista_ids);
 	void print_libera(int retorno_operacao);
 	void print_limpa_lista(int tam_lista, ID lista_ids);
-	void print_resultado(int retorno_operacao); //método para mostrar sucesso ou não da operação
+	void print_sucesso();
+	void print_fracasso();
+	void print_warning();
+	void tempo_decorrido();
 
-	//void delay_padrao(){pausa.delay(500);
+
+	void delay_padrao(){
+		_timer->delay(10);
 			//método de delay padrão para os logs
-	//};
+	};
+	void endline(){
+		sprintf(_message, ".\n");
+		_uart_log->puts(_message);
+	}
 
 private:
 	char _message[40];
 	UART * _uart_log;
-	Timer * _pausa;
+	Timer * _timer;
+	unsigned long long _tempo_decorr;
 
 };
 
