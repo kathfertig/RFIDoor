@@ -17,6 +17,7 @@
 #include "Timer.h"
 #include "RDM6300.h"
 #include "LOG.h"
+#include "Notify.h"
 
 #define BAUD 9600
 #define MYUBRR F_CPU/8/BAUD-1
@@ -48,6 +49,7 @@ RFID ID_gen;
 ID ID_acesso;
 Timer timer(1000);
 LOG logger(&uart, &timer);
+Notify notifier(&timer);
 
 char message[40];
 id_mat id_in;
@@ -66,18 +68,20 @@ void valor_botoes(){
 	else valor = ZERO;
 }
 
+void zerar_pinos(){
+			led_verde.set(false);
+			led_vermelho.set(false);
+			botao_acesso.set(false);
+			botao_cadastro.set(false);
+			botao_remove.set(false);
+}
 
 void setup() {
 	sei(); //inicializar/ativar as interrupções
+	zerar_pinos();
 };
 
-void zerar_pinos(){
-	led_verde.set(false);
-	led_vermelho.set(false);
-	botao_acesso.set(false);
-	botao_cadastro.set(false);
-	botao_remove.set(false);
-}
+
 
 /*//FUNCIONAMENTO DO SISTEMA:
  * Insere matricula/cartao
@@ -118,166 +122,50 @@ void loop() {
 	logger.get_id64(id_in,1);
 	timer.delay(1000);
 
-
-
-	/*id_in = ID_gen.random_id();
 	if (valor > 0){
-		//logger.print_acesso(matricula_in);
-		sprintf(message, "Novo ID tentando acesso: ");
-		uart.puts(message);
-		logger.get_id64(id_in,0);
-		endline();
-		//timer.delay(2000);
+		logger.print_acesso(id_in);
 
 		switch(valor){
 		case 1:
 			//Analisa acesso:
-
-			//logger.print_verifica(matricula_in);
-			sprintf(message, "Verificando ID.");
-			uart.puts(message);
-			endline();
-			//timer.delay(2000);
-
+			logger.print_verifica(id_in);
 			retorno = ID_acesso.verifica(id_in);
-			//logger.print_libera(retorno);
-			if(retorno >= 0){
-				sprintf(message, "ID cadastrado. Liberando acesso.\n");
-				uart.puts(message);
-				//timer.delay(2000);
+			logger.print_libera(retorno);
+			if(retorno >= 0)
+				notifier.notify_acesso(&led_verde);
+			else
+				notifier.notify_warning(&led_vermelho);
+			zerar_pinos();
+			break;
 
-
-				//notifier.notify_acesso();
-				//acender led verde, habilitar relé, 3 bips curtos do alta freq. buzzer
-				int vezes = 3;
-				for (int repete = 0; repete < vezes; repete++){
-					//rele.set(true);			//Ativa Rele
-					//buzzer_acesso.set(true);
-					led_verde.set(true);
-					timer.delay(500);
-					led_verde.set(false);
-					//buzzer_acesso.set(false);
-					timer.delay(500);
-				}
-				zerar_pinos();
-				//rele.set(false);		//Desativa Rele
-				//timer.delay(2000);
-
-			}else{
-				sprintf(message, "ID sem cadastro.\n");
-				uart.puts(message);
-				//timer.delay(2000);
-
-				//notifier.notify_warning();
-				//acender led vermelho, bip longo de baixa freq. do buzzer
-				led_vermelho.set(true);
-				//buzzer_warning.set(true);
-				timer.delay(1000);
-				zerar_pinos();
-				//buzzer_warning.set(false);
-			}break;
 
 		case 2:
 			//Cadastra ID:
-			//logger.print_cadastra(matricula_in);
-			sprintf(message, "Cadastrando ID: ");
-			uart.puts(message);
-			logger.get_id64(id_in,0);
-			endline();
-			//timer.delay(2000);
-
+			logger.print_cadastra(id_in);
 			retorno = ID_acesso.cadastra(id_in);
-			//logger.print_resultado(retorno);
-			if (retorno > 0){
-				sprintf(message, "Operacao realizada com sucesso. Retorna: %d.\n",retorno);
-				uart.puts(message);
-				//timer.delay(2000);
-
-				//notifier.notify_sucesso();
-				//acender led verde, 1 bip longo alta freq. do buzzer
-				//buzzer_sucesso.set(true);
-				led_verde.set(true);
-				led_vermelho.set(false);
-				timer.delay(1000);
-				led_verde.set(false);
-				//buzzer_sucesso.set(false);
-			}else{
-				sprintf(message, "Operacao nao pode ser finalizada com sucesso. Retorna: %d.\n",retorno);
-				uart.puts(message);
-				//timer.delay(2000);
-
-				//notifier.notify_warning();
-				//acender led vermelho, bip longo de baixa freq. do buzzer
-				led_vermelho.set(true);
-				//buzzer_warning.set(true);
-				led_verde.set(false);
-				timer.delay(1000);
-				led_verde.set(false);
-				//buzzer_warning.set(false);
-			}
+			logger.print_resultado(retorno);
+			if(retorno > 0)
+				notifier.notify_sucesso(&led_verde);
+			else
+				notifier.notify_warning(&led_vermelho);
+			zerar_pinos();
 			break;
 
 		case 3:
 			//Remove ID:
-			//logger.print_remove(matricula_in);
-			sprintf(message, "Removendo ID: ");
-			uart.puts(message);
-			logger.get_id64(id_in,0);
-			endline();
-			//timer.delay(2000);
-
-
+			logger.print_remove(id_in);
 			retorno = ID_acesso.remove(id_in);
-
-			//logger.print_resultado(retorno);
-			if (retorno > 0){
-				sprintf(message, "Operacao realizada com sucesso. Retorna: %d.\n",retorno);
-				uart.puts(message);
-				//timer.delay(2000);
-
-				//notifier.notify_sucesso();
-				//acender led verde, 1 bip longo alta freq. do buzzer
-				//buzzer_sucesso.set(true);
-				led_verde.set(true);
-				led_vermelho.set(false);
-				timer.delay(1000);
-				led_verde.set(false);
-				//buzzer_sucesso.set(false);
-			}else{
-				sprintf(message, "Operacao nao pode ser finalizada com sucesso. Retorna: %d.\n",retorno);
-				uart.puts(message);
-				//timer.delay(2000);
-
-				//notifier.notify_warning();
-				//acender led vermelho, bip longo de baixa freq. do buzzer
-				led_vermelho.set(true);
-				//buzzer_warning.set(true);
-				led_verde.set(false);
-				timer.delay(1000);
-				led_verde.set(false);
-				//buzzer_warning.set(false);
-			}
+			logger.print_resultado(retorno);
+			if(retorno > 0)
+				notifier.notify_sucesso(&led_verde);
+			else
+				notifier.notify_warning(&led_vermelho);
+			zerar_pinos();
 			break;
 
-	/*default:
-		sprintf(message, "Aperte um botao! \n");
-		uart.puts(message);
-		break;*/
-		/*memset(&message, '\0', 40);
-		sprintf(message, "Insira o seu cartao: \n");
-		uart.puts(message);
-		memset(&message, '\0', 40);
-		sprintf(message, "1) Para abrir porta aperte o botao 1;\n");
-		uart.puts(message);
-		memset(&message, '\0', 40);
-		sprintf(message, "2) Para cadastrar ID aperte o botao 2;\n");
-		uart.puts(message);
-		memset(&message, '\0', 40);
-		sprintf(message, "3) Para remover ID aperte o botao 3;\n");
-		uart.puts(message);
-		timer.delay(2000);*/
-
-	//}
+		default:
+			logger.instrucoes();
+		}
 	/*if(matricula != 0){
 	//1)ver se botão 1 foi clicado (quer entrar)
 		//switch (botao)
@@ -351,7 +239,7 @@ void loop() {
 		}
 
 	}*/
-	//}
+	}
 };
 
 
@@ -359,7 +247,6 @@ int main(){
 	setup();
 	while(true){
 		valor_botoes();
-		zerar_pinos();
 		loop();
 	}
 }
