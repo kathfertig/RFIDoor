@@ -11,24 +11,22 @@
 #include "GPIO.h"
 #include "Timer.h"
 
-Timer timer_aciona(1000);
 typedef long int hertz;
 
 class Buzzer {
 public:
-
-	enum Buzzer_t{_buzzer0 = 0, _buzzer1 = 1, _buzzer2 = 2, _buzzer3 = 3, _buzzer4 = 4};
-
-	Buzzer(int pin, Buzzer_t = _buzzer0);
+	static bool _play;
+	Buzzer(hertz frequencia, GPIO * buzzer, Timer * timer);
 	~Buzzer();
 
-	//Buzzer(int pin,int freq, int miliseconds);
-	void aciona_config();
+	void aciona(hertz tempo);
 
 private:
-	GPIO _buzzer_config;
+	GPIO * _buzzer;
+	Timer * _timer;
 	hertz _frequencia;
 	hertz _tempo;
+
 };
 
 #endif /* BUZZER_H_ */
