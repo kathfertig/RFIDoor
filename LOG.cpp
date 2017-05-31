@@ -41,24 +41,21 @@ void LOG::print_N_users(int n_users){
 void LOG::print_cadastra(id_mat id){ //método que informa o cadastro de IDs
 	sprintf(_message, "Cadastrando ID: ");
 	_uart_log->puts(_message);
-	get_id64(id);
-	endline();
+	get_id64(id,1);
 	_pausa->delay(500);
 }
 
 void LOG::print_verifica(id_mat id){ //método que informa a verificação de IDs
 	sprintf(_message, "Verificando ID: ");
 	_uart_log->puts(_message);
-	get_id64(id);
-	endline();
+	get_id64(id,1);
 	_pausa->delay(500);
 }
 
 void LOG::print_remove(id_mat id){ //método que informa a verificação de IDs
 	sprintf(_message, "Removendo ID: ");
 	_uart_log->puts(_message);
-	get_id64(id);
-	endline();
+	get_id64(id,1);
 	_pausa->delay(500);
 }
 
@@ -78,8 +75,7 @@ void LOG::print_IDs(ID lista_ids){
 		sprintf(_message, "ID%d: ", i+1);
 		_uart_log->puts(_message);
 		retorno = lista_ids.busca(i);
-		get_id64(retorno);
-		endline();
+		get_id64(retorno,1);
 		_uart_log->puts(_message);
 		_pausa->delay(500);
 	}
@@ -101,8 +97,7 @@ void LOG::print_limpa_lista(int tam_lista, ID lista_ids){
 void LOG::print_acesso(id_mat id){
 	sprintf(_message, "Novo ID tentando acesso: ");
 	_uart_log->puts(_message);
-	get_id64(id);
-	endline();
+	get_id64(id,1);
 	_pausa->delay(500);
 }
 
