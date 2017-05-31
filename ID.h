@@ -30,8 +30,8 @@ public:
 	~ID();
 
 	int verifica(id_mat  id_in);
-	bool cadastra(id_mat  id_in);
-	bool remove(id_mat  id_in);
+	int cadastra(id_mat  id_in);
+	int remove(id_mat  id_in);
 	int get_tam_atual(){ //retorna o tam. atual da lista, ie, o nº de users cadastrados na lista
 		return _n_users;
 		}
