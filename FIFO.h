@@ -27,12 +27,9 @@ public:
 	void push(char value){
 
 		_tail++;
-		//_tail = _tail % Q_SIZE;
 		if( _size == Q_SIZE) {
-			//_message = "FILA CHEIA!\n";
 			_error_fifo = FIFO_ERROR_FULL;
 
-		//if (((_tail+1) % Q_SIZE) == _head)	//perror("enqueue onto full queue",_tail);
 		} else {
 		_buffer[_tail-1] = value;
 		/* update the tail */
@@ -48,12 +45,9 @@ public:
 		char returnval;
 		_head++;
 		if (_size == 0) {
-			//_message = "FILA VAZIA!\n";
 			_error_fifo = FIFO_ERROR_EMPTY;
 
 		} else {
-		//if (_head == _tail) //cout << "dequeue from empty queue"<< head << endl;//error("dequeue from empty queue",head);
-
 			returnval = _buffer[_head-1];
 			if (_head == Q_SIZE){
 				_head = 0;
@@ -65,22 +59,23 @@ public:
 		return  returnval;
 	}
 
-	char* get_message(){
-		return _message;
+	int get_size(){
+		return _size;
 	}
 
-	int get_error(){
-			return _error_fifo;
-		}
-	int get_size(){
-			return _size;
-		}
-
-	void clear() {
+	void clear() {//limpa FIFO
 		_head = 0;
 		_tail = 0;
 		_size = 0;
 	}
+
+	/*char* get_message(){ //método para teste, indica sucesso de operação
+		return _message;
+	}*/
+
+	/*int get_error(){ //método para teste, indica qualo erro gerado pela operação
+		return _error_fifo;
+	}*/
 
 private:
 	int _head, _tail, _size;

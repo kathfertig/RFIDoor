@@ -10,8 +10,6 @@
 #include <avr/interrupt.h>
 
 GPIO::GPIO(int pin, PortDirection_t dir) {
-	//calcular a máscara
-	// configurar DDR
 
 	if (pin >= 8){
 		_mask = (1<<(pin-8));
@@ -39,9 +37,8 @@ bool GPIO::get() {
 }
 
 void GPIO::set(bool val){
-
 	//escrever no port
-	if (val == true) //PORTB = PORTB | led_mask;
+	if (val == true)
 	*_port  = *_port | _mask;
 	else
 	*_port  = *_port & ~_mask;

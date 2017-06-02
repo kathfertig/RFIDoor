@@ -33,11 +33,9 @@ public:
 
 	id_mat random_id(){
 		id_mat r = 0;
-		for (int i=LOOP_COUNT; i > 0; i--){
+		for (int i=LOOP_COUNT; i > 0; i--)
 			r = r*(RAND_MAX + (id_mat)1) + rand();
-		}
 		return r;
-		//return ( rand() % ( _max - _min + 1 ) ) + _min;
 	}
 
 private:

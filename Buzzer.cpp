@@ -15,15 +15,14 @@ Buzzer::~Buzzer(){}
 
 void Buzzer::aciona(hertz tempo){
 	_tempo = tempo;
-	hertz val = (500000/(_frequencia));
-	//long int t = _miliseconds*1000 / (1000/_frequencia);
-	hertz t = (_tempo*50) / (val*2);
+	hertz div = (500000/(_frequencia));
+	hertz repete = (_tempo*50) / (div*2);
 
-	for(long int i=0; i < t; i++){
+	for(long int i=0; i < repete; i++){
 		_buzzer->set(true);
-		_timer->udelay(val);
+		_timer->udelay(div);
 		_buzzer->set(false);
-		_timer->udelay(val);
+		_timer->udelay(div);
 	}
 }
 

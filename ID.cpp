@@ -13,7 +13,6 @@ ID::~ID(){}
 
 int ID::verifica(id_mat id_in){
     int index=-1, i=0;
-    //int n = T_MAX;
 
     while(i<T_MAX){
        if(this->_lista_IDs[i] == id_in){
@@ -27,9 +26,8 @@ int ID::verifica(id_mat id_in){
 }
 
 int ID::cadastra(id_mat id_in){
-	//int n = T_MAX;
 	bool ret;
-	if (verifica(id_in) == (-1)){ // se sim, elemento não encontrado. Pode inserir
+	if (verifica(id_in) == (-1)){ // se sim, elemento não encontrado. Pode inserir novo ID
 		this->_lista_IDs[_n_users]=id_in;
 		_n_users++;
 		ret = 1;
@@ -39,7 +37,13 @@ int ID::cadastra(id_mat id_in){
 	return ret;
 }
 
-int ID::remove(id_mat id_in){
+void ID::limpa_lista(){
+	for (int i=0; i< T_MAX; i++) {
+		memset(&_lista_IDs[i], 0, 40);
+	}
+}
+
+/*int ID::remove(id_mat id_in){
 
      int index = verifica(id_in);
      int ret;
@@ -53,19 +57,8 @@ int ID::remove(id_mat id_in){
     	 ret = 1;
      }
     return ret;
-}
+}*/
 
-void ID::limpa_lista(){
-	for (int i=0; i< T_MAX; i++) {
-		memset(&_lista_IDs[i], 0, 40);
-	}
-}
-
-
-
-
-
-//https://www.vivaolinux.com.br/script/Busca-insercao-e-remocao-de-elementos-numa-lista
 
 
 

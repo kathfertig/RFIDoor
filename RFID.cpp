@@ -7,7 +7,7 @@
 
 #include "RFID.h"
 
-RFID::RFID() {
+RFID::RFID() {//inicialização do construtor para geração de nº randômicos de 40 bits
 	_min = 2^39;
 	_max = 2^40;
 }

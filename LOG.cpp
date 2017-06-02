@@ -7,9 +7,7 @@
 
 #include "LOG.h"
 
-LOG::LOG(UART *uart, Timer *timer):_uart_log(uart),_timer(timer), _tempo_decorr(0){
-	//memset(&_message, '\0', 40);
-}
+LOG::LOG(UART *uart, Timer *timer):_uart_log(uart),_timer(timer), _tempo_decorr(0){}
 
 LOG::~LOG() {}
 
@@ -33,14 +31,6 @@ void LOG::get_id64(id_mat & id, bool endline){
 	    delay_padrao();
 }
 
-void LOG::print_N_users(int n_users){
-	tempo_decorrido();
-	sprintf(_message, "No de usuarios cadastrados no sistema: %d\n",n_users); //n_users = _id_teste.get_tam_atual()
-	_uart_log->puts(_message);
-	endline();
-	delay_padrao();
-}
-
 void LOG::print_cadastra(id_mat id){ //método que informa o cadastro de IDs
 	tempo_decorrido();
 	sprintf(_message, "Cadastrando ID: ");
@@ -53,15 +43,6 @@ void LOG::print_cadastra(id_mat id){ //método que informa o cadastro de IDs
 void LOG::print_verifica(id_mat id){ //método que informa a verificação de IDs
 	tempo_decorrido();
 	sprintf(_message, "Verificando ID: ");
-	_uart_log->puts(_message);
-	get_id64(id,0);
-	endline();
-	delay_padrao();
-}
-
-void LOG::print_remove(id_mat id){ //método que informa a verificação de IDs
-	tempo_decorrido();
-	sprintf(_message, "Removendo ID: ");
 	_uart_log->puts(_message);
 	get_id64(id,0);
 	endline();
@@ -89,23 +70,24 @@ void LOG::print_warning(){
 	delay_padrao();
 }
 
-void LOG::print_IDs(ID lista_ids){
+void LOG::print_IDs(ID *lista_ids){
 	tempo_decorrido();
 	id_mat retorno;
-	for(int i=0; i<lista_ids.get_tam_atual(); i++) {
+	_lista_IDs = lista_ids;
+	for(int i=0; i<_lista_IDs->get_tam_atual(); i++) {
 		sprintf(_message, "ID%d: ", i+1);
 		_uart_log->puts(_message);
-		retorno = lista_ids.busca(i);
+		retorno = _lista_IDs->busca(i);
 		get_id64(retorno,0);
 		endline();
 		delay_padrao();
 	}
 }
 
-void LOG::print_limpa_lista(int tam_lista, ID lista_ids){
+void LOG::print_limpa_lista(int tam_lista, ID *lista_ids){
 	tempo_decorrido();
 	if(tam_lista>0){
-		sprintf(_message, "Limpando lista de IDs: ");
+		sprintf(_message, "Limpando lista de IDs: \n");
 		_uart_log->puts(_message);
 		print_IDs(lista_ids);
 		delay_padrao();
@@ -135,7 +117,15 @@ void LOG::print_libera(int retorno_operacao){
 	delay_padrao();
 }
 
-void LOG::instrucoes(){
+void LOG::tempo_decorrido(){
+	_tempo_decorr = _timer->millis();
+	get_id64(_tempo_decorr,0);
+	sprintf(_message, "ms: ");
+	_uart_log->puts(_message);
+	delay_padrao();
+}
+
+/*void LOG::instrucoes(){
 	tempo_decorrido();
 	sprintf(_message, "Insira o seu cartao e:\n");
 	_uart_log->puts(_message);
@@ -147,12 +137,21 @@ void LOG::instrucoes(){
 	_uart_log->puts(_message);
 	delay_padrao();
 	delay_padrao();
-}
+}*/
 
-void LOG::tempo_decorrido(){
-	_tempo_decorr = _timer->millis();
-	get_id64(_tempo_decorr,0);
-	sprintf(_message, "ms: ");
+/*void LOG::print_N_users(int n_users){
+	tempo_decorrido();
+	sprintf(_message, "No de usuarios cadastrados no sistema: %d\n",n_users); //n_users = _id_teste.get_tam_atual()
 	_uart_log->puts(_message);
+	endline();
 	delay_padrao();
-}
+}*/
+
+/*void LOG::print_remove(id_mat id){ //método que informa a verificação de IDs
+	tempo_decorrido();
+	sprintf(_message, "Removendo ID: ");
+	_uart_log->puts(_message);
+	get_id64(id,0);
+	endline();
+	delay_padrao();
+}*/

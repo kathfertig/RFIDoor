@@ -22,7 +22,7 @@ Timer::Timer(Hertz freq) : _frequency(freq)
 	TIMSK0 = 0x01; //liga interrupção de overflow
 
 	Hertz f_timer;
-	//lógica oara selecionar divisor
+	//lógica para selecionar divisor
 	if(freq <= 15000){
 		TCCR0B = 0x05; //dividindo o clock por 1024
 		f_timer = F_CPU/1024;
@@ -40,11 +40,8 @@ Timer::Timer(Hertz freq) : _frequency(freq)
 
 
 	//calcular ciclos de timer
-	//_count_timer = f_timer/freq;
 	_count_timer = (f_timer*freq)/1000000;
-	TCNT0 = 0xFF - _count_timer; //funciona
-	//TCNT0 = 0xFF - 64; //funciona - old 0xF0;
-
+	TCNT0 = 0xFF - _count_timer;
 	_us_ticks = (1000000*_count_timer)/f_timer;
 }
 
@@ -54,7 +51,6 @@ Milliseconds Timer::millis(){
 	return micros()/1000;
 }
 Microseconds Timer::micros(){
-	//return _ticks; //funciona
 	return _us_ticks * _ticks;
 }
 
@@ -69,9 +65,7 @@ void Timer::udelay(Microseconds us){
 
 void Timer::isr_handler() //interrupt service request handler
 {
-	//TCNT0 = 0xF0; //funciona - old
-	//TCNT0 = 0xFF - 64; //funciona - old
-	TCNT0 = 0xFF -_count_timer; //funciona
+	TCNT0 = 0xFF -_count_timer;
 	_ticks++;
 }
 

@@ -18,8 +18,8 @@ public:
 	~Notify(){}
 
 	void notify_acesso(GPIO * led, GPIO * rele_porta, Buzzer * buzzer_acesso){
-		//acender led verde, 1 bip longo alta freq. do buzzer
-		rele_porta->set(true);			//Ativa Rele
+		//acender led verde, habilitar relé, 1 bip longo do buzzer
+		rele_porta->set(true);	//Ativa Rele
 		led->set(true);
 		buzzer_acesso->aciona(500);
 		_timer->delay(500);
@@ -27,7 +27,7 @@ public:
 	}
 
 	void notify_sucesso(GPIO * led, Buzzer * buzzer_sucesso){
-		//acender led verde, habilitar relé, 3 bips curtos do alta freq. buzzer
+		//acender led verde, 2 bips curtos do buzzer
 		for (int repete = 0; repete < 2; repete++){
 			led->set(true);
 			buzzer_sucesso->aciona(200);
@@ -37,7 +37,7 @@ public:
 	}
 
 	void notify_warning(GPIO * led, Buzzer * buzzer_warning){
-		//acender led vermelho, bip longo de baixa freq. do buzzer
+		//acender led vermelho, 4 bips curtos e rápidos do buzzer
 		for (int repete = 0; repete < 4; repete++){
 			led->set(true);
 			buzzer_warning->aciona(50);
